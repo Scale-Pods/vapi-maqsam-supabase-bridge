@@ -10,7 +10,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
 // 🔐 DB CONFIG (Update these if needed)
-const TABLES_TO_SEARCH = ["master_leads"];
+const TABLES_TO_SEARCH = ["nr_wf", "nurture", "followup"];
 const NAME_COLUMN = "Name";
 const PHONE_COLUMN = "Phone";
 
@@ -25,16 +25,13 @@ async function getCustomerName(phoneNumber) {
   if (!phoneNumber) return null;
 
   try {
-    // 🔥 Normalize incoming number
-    const cleaned = phoneNumber.replace(/\D/g, "");
-    console.log("CLEANED INPUT:", cleaned);
-
+    // Search all 3 tables in parallel for maximum speed
     const searchPromises = TABLES_TO_SEARCH.map(async (tableName) => {
-
+      // Direct database lookup using .eq() filter for high efficiency
       const { data, error } = await supabase
         .from(tableName)
         .select(NAME_COLUMN)
-        .eq(PHONE_COLUMN, cleaned) // ✅ use cleaned number
+        .eq(PHONE_COLUMN, phoneNumber) // Search for exact match
         .limit(1)
         .maybeSingle();
 
@@ -42,18 +39,18 @@ async function getCustomerName(phoneNumber) {
         console.error(`[DB Error] ${tableName}:`, error.message);
         return null;
       }
-
       return data ? data[NAME_COLUMN] : null;
     });
 
     const results = await Promise.all(searchPromises);
 
+    // Return the first name found across all tables
     const foundName = results.find(name => name != null);
 
     return foundName || null;
 
   } catch (err) {
-    console.error("[Critical Error]:", err);
+    console.error("[Critical Error] Global search failure:", err);
     return null;
   }
 }
@@ -65,11 +62,8 @@ app.post("/assistant-selector", async (req, res) => {
       console.log(`[${new Date().toISOString()}] Incoming Request: ${phoneNumber}`);
 
       // Start fetching the name immediately
-       // 🔥 REPLACE THIS PART ONLY
-      const customerName = await Promise.race([
-        getCustomerName(phoneNumber),
-        new Promise(resolve => setTimeout(() => resolve(null), 2000))
-      ]);
+      const customerName = await getCustomerName(phoneNumber);
+
       console.log(`[Result] Phone: ${phoneNumber} -> Name: ${customerName || "Not Found"}`);
 
       res.json({
