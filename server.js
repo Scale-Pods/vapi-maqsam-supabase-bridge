@@ -99,10 +99,7 @@ app.post("/assistant-selector", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`\n🚀 High-Performance Vapi Server Running`);
-  console.log(`📅 Started at: ${new Date().toLocaleString()}`);
-  console.log(`📊 Searching Tables: ${TABLES_TO_SEARCH.join(", ")}`);
-  console.log(`📡 Port: ${PORT}\n`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
