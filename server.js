@@ -73,7 +73,7 @@ app.post("/assistant-selector", async (req, res) => {
       console.log(`[Result] Phone: ${phoneNumber} -> Name: ${customerName || "Not Found"}`);
 
       res.json({
-        assistantId: "02b53341-2f4f-44aa-a264-292e0ad57589",
+        assistantId: "70f05e16-18f3-4f6e-964a-f47b299c6c1d",
         assistantOverrides: {
           variableValues: {
             customerName: customerName || "there"
@@ -88,7 +88,7 @@ app.post("/assistant-selector", async (req, res) => {
     console.error("[Server Error]:", err);
 
     res.json({
-      assistantId: "02b53341-2f4f-44aa-a264-292e0ad57589",
+      assistantId: "70f05e16-18f3-4f6e-964a-f47b299c6c1d",
       assistantOverrides: {
         variableValues: {
           customerName: "there"
