@@ -50,7 +50,7 @@ async function getCustomerName(phoneNumber) {
 
     const foundName = results.find(name => name != null);
 
-    return foundName || null;
+   return foundName ? foundName.trim().split(' ')[0] : null;
 
   } catch (err) {
     console.error("[Critical Error]:", err);
