@@ -10,9 +10,10 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
 // 🔐 DB CONFIG (Update these if needed)
-const TABLES_TO_SEARCH = ["master_leads"];
-const NAME_COLUMN = "Name";
-const PHONE_COLUMN = "Phone";
+const TABLES_TO_SEARCH = [
+  { table: "master_leads", nameColumn: "Name", phoneColumn: "Phone" },
+  { table: "1731_leads_calls", nameColumn: "name", phoneColumn: "phone" }
+];
 
 // 🔐 AUTH
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -29,21 +30,21 @@ async function getCustomerName(phoneNumber) {
     const cleaned = phoneNumber.replace(/\D/g, "");
     console.log("CLEANED INPUT:", cleaned);
 
-    const searchPromises = TABLES_TO_SEARCH.map(async (tableName) => {
+    const searchPromises = TABLES_TO_SEARCH.map(async ({ table, nameColumn, phoneColumn }) => {
 
       const { data, error } = await supabase
-        .from(tableName)
-        .select(NAME_COLUMN)
-        .eq(PHONE_COLUMN, cleaned) // ✅ use cleaned number
+        .from(table)
+        .select(nameColumn)
+        .eq(phoneColumn, cleaned) // ✅ use cleaned number
         .limit(1)
         .maybeSingle();
 
       if (error) {
-        console.error(`[DB Error] ${tableName}:`, error.message);
+        console.error(`[DB Error] ${table}:`, error.message);
         return null;
       }
 
-      return data ? data[NAME_COLUMN] : null;
+      return data ? data[nameColumn] : null;
     });
 
     const results = await Promise.all(searchPromises);
