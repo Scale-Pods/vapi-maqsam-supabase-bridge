@@ -12,7 +12,7 @@ const supabaseKey = process.env.SUPABASE_KEY;
 // 🔐 DB CONFIG (Update these if needed)
 const TABLES_TO_SEARCH = [
   { table: "master_leads", nameColumn: "Name", phoneColumn: "Phone" },
-  { table: "1731_leads_calls", nameColumn: "name", phoneColumn: "phone" }
+  { table: "1731_leads", nameColumn: "name", phoneColumn: "contactNo" }
 ];
 
 // 🔐 AUTH
